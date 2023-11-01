@@ -5,4 +5,4 @@ plot: $(SRC)
 	$(PC) $(SRC)
 
 clean:
-	rm *.txt
+	rm *.txt *.png
