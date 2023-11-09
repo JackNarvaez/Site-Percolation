@@ -5,24 +5,21 @@
 int main()
 {
     std::srand(1234);
-    int     n           = 100;                  // Side of Grid
+    int     n           = 15;                  // Side of Grid
     double  pc          = 0.5 ;                 // Critical Probability
-    char    filenameG[] = "../pic/Grid.txt";    // File adress for saving data
-    char    filenameC[] = "../pic/Cluster.txt"; // File adress for saving data
+    char    filename[]  = "../pic/Cluster.txt"; // File adress for saving data
     System  grid;
     grid.n  = n;
     grid.pc = pc;
-    grid.n_cluster = 0;
-    FILE *outg, *outc;
+    FILE *out;
     
-    outg = fopen(filenameG, "w");
-    outc = fopen(filenameC, "w");
+    out = fopen(filename, "w");
+
 
     /* Allocate Memory*/
-    grid.pos        =(int  *)malloc(grid.n*grid.n*sizeof(int));
-    grid.state      =(bool *)malloc(grid.n*grid.n*sizeof(bool));
     grid.cluster    =(int  *)malloc(grid.n*grid.n*sizeof(int));
     grid.classes    =(int  *)malloc((grid.n*grid.n/4)*sizeof(int));
+    grid.finclas    =(int  *)malloc((grid.n*grid.n/4)*sizeof(int));
     grid.children   =(int  *)malloc((grid.n*grid.n/4)*sizeof(int));
 
     /* Create Grid*/
@@ -30,20 +27,17 @@ int main()
 
     /* Create Clusters*/
     hoshenKopelman(grid);
-    countCluster(grid);
+    //countCluster(grid);
 
     /* Save Data*/
-    output(grid, outg);
-    outputCluster(grid, outc);
+    outputCluster(grid, out);
     
-    fclose(outg);
-    fclose(outc);
+    fclose(out);
     
     /* Deallocate memory*/
-    free(grid.pos);
-    free(grid.state);
     free(grid.cluster);
     free(grid.classes);
+    free(grid.finclas);
     free(grid.children);
     
     return 0;
