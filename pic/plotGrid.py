@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 from  matplotlib.colors import LinearSegmentedColormap
-from random import random
+from random import random, seed
 import numpy as np
+
+seed(1234)
 
 ''' ---------- Plot Grid ---------- '''
 Data = np.loadtxt("Cluster.txt");
@@ -14,9 +16,8 @@ plt.show()
 
 
 ''' ----- Define Random Color Map -----'''
-colors = [(1,1,1)] + [(random(),random(),random()) for i in range(255)]
+colors = [(0,0,0)] + [(random(),random(),random()) for i in range(255)]
 new_map = LinearSegmentedColormap.from_list('new_map', colors, N=256)
-
 
 ''' ---------- Plot Grid ---------- '''
 fig, ax = plt.subplots(figsize=(8,8))

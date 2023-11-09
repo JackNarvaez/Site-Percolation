@@ -5,7 +5,7 @@
 int main()
 {
     std::srand(1234);
-    int     n           = 15;                  // Side of Grid
+    int     n           = 100;                  // Side of Grid
     double  pc          = 0.5 ;                 // Critical Probability
     char    filename[]  = "../pic/Cluster.txt"; // File adress for saving data
     System  grid;
@@ -27,7 +27,6 @@ int main()
 
     /* Create Clusters*/
     hoshenKopelman(grid);
-    //countCluster(grid);
 
     /* Save Data*/
     outputCluster(grid, out);

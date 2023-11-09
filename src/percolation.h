@@ -18,19 +18,20 @@ typedef struct SystemGrid System;
 
 bool gen(double pc)
 {
+    // Get a cell occupied (1) or unoccupied (0) 
     int p = (RAND()<=pc) ? 1 : 0;
     return p;
 }
 
 void createGrid(System &grid)
 {
+    // Initialise the grid
     int pp, n, n2, cm;
     n  = grid.n;
     n2 = n*n;
     cm = n2/4;
-    for (pp=0; pp<n2; pp++) {
-        grid.cluster[pp] = gen(grid.pc); 
-    }
+    for (pp=0; pp<n2; pp++) grid.cluster[pp] = gen(grid.pc);
+
     for (pp=0; pp<cm; pp++) {
         grid.classes[pp]  = 0;
         grid.finclas[pp]  = 0;
@@ -39,6 +40,7 @@ void createGrid(System &grid)
 }
 
 int find(int *classes, int p) {
+    // find parent (root) of the pth-cluster
     int temp = p;
     int temp2;
     while (classes[temp] != temp) temp = classes[temp];
@@ -53,6 +55,8 @@ int find(int *classes, int p) {
 
 int link(int *classes, int above, int left)
 {   
+    // Connect clusters above and left by changing the root
+    // of one them
     classes[find(classes, above)] = find(classes, left);
     return classes[find(classes, above)];
 }
@@ -67,20 +71,20 @@ void hoshenKopelman(System &grid)
             pc = ii + n*jj;
             if (grid.cluster[pc]) {
                 above = (jj==0 ? 0 : grid.cluster[ii + n*(jj-1)]);
-                left = (ii==0 ? 0 : grid.cluster[(ii-1) + n*jj]);
+                left  = (ii==0 ? 0 : grid.cluster[(ii-1) + n*jj]);
                 switch(!!left + !!above)
                 {
-                    case 0:
+                    case 0: // New Cluster [Isolated cell]
                         grid.classes[0] ++;
                         grid.classes[grid.classes[0]] = grid.classes[0];
                         grid.cluster[pc] = grid.classes[0];
                         break;
 
-                    case 1:
+                    case 1: // Join one cluster [1 Neighbour]
                         grid.cluster[pc] = std::max(left, above);
                         break;
 
-                    case 2:
+                    case 2: // Link two clusters [2 Neighbours]
                         grid.cluster[pc] = link(grid.classes, above, left);
                         break;
                 }
@@ -103,21 +107,7 @@ void hoshenKopelman(System &grid)
     }
 }
 
-void countCluster(System &grid)
-{
-    int n2 = grid.n*grid.n;
-    int pc;
-    grid.classes[0] = *std::max_element(grid.cluster, grid.cluster+n2);
-
-    for (pc=0; pc<grid.classes[0]; pc++) {
-        grid.classes[pc] = pc;
-    }
-    for (pc=0; pc<n2; pc++) {
-        grid.children[grid.cluster[pc]] += 1;
-    }
-}
-
-/* append data to output. */
+/* Save data in a file*/
 void outputCluster(System &grid, FILE *out)
 {
     int ii, jj;
