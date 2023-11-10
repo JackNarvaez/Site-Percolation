@@ -1,3 +1,8 @@
+/******************************************************************************
+ ***          Side Percolation using the Hoshen Kopelman algorithm         ***
+ ***          Written by Jacksen Narvaez, 2023.                            ***
+******************************************************************************/
+
 #include <iostream>
 #include <stdlib.h>
 #include <algorithm>
@@ -8,6 +13,7 @@ struct SystemGrid
 {
     int     n;          // Side of the squared grid
     double  pc;         // Critical Probability
+    int     percolate;  // If there exists, it contains the percolate cluster label.
     int     *cluster;   // Cluster's label
     int     *classes;   // 1D Array for cluster's alias (Temporal)
     int     *finclas;   // 1D Array for cluster's alias (Equivalente classes joined)
@@ -56,7 +62,7 @@ int find(int *classes, int p) {
 int link(int *classes, int above, int left)
 {   
     // Connect clusters above and left by changing the root
-    // of one them
+    // of one of them
     classes[find(classes, above)] = find(classes, left);
     return classes[find(classes, above)];
 }
@@ -105,6 +111,29 @@ void hoshenKopelman(System &grid)
             grid.children[grid.finclas[x]] ++;
         }
     }
+}
+
+int percolation(int *cluster, int *children, int n)
+{
+    /* returns, if there is a percolant cluster, the percolant cluster label*/
+    int ii, jj;
+    int n2 = n*n;
+    int last_row = n2-n;
+    for (ii=0; ii<n; ii++){
+        if (cluster[ii] && (children[ii]>= n)) {
+            for (jj=0; jj<n; jj++) {
+                if (cluster[ii]==cluster[last_row + jj]) return cluster[ii];
+            }
+        }
+    }
+    for (ii=0; ii<n2; ii+=n) {
+        if (cluster[ii] && (children[ii]>= n)) {
+            for (jj=1; jj<=n; jj++) {
+                if (cluster[ii]==cluster[n*jj-1]) return cluster[ii];
+            }
+        }
+    }
+    return 0;
 }
 
 /* Save data in a file*/

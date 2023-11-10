@@ -1,20 +1,26 @@
+/******************************************************************************
+ ***          Side Percolation using the Hoshen Kopelman algorithm         ***
+ ***          Written by Jacksen Narvaez, 2023.                            ***
+******************************************************************************/
+
 #include <iostream>
 #include <stdlib.h>
+#include <chrono>
 #include "percolation.h"
 
 int main()
 {
     std::srand(1234);
-    int     n           = 100;                  // Side of Grid
-    double  pc          = 0.5 ;                 // Critical Probability
+    int     n           = 1000;                 // Side of Grid
+    double  pc          = 0.6 ;                 // Critical Probability
     char    filename[]  = "../pic/Cluster.txt"; // File adress for saving data
     System  grid;
     grid.n  = n;
     grid.pc = pc;
+    grid.percolate = 0;
     FILE *out;
     
     out = fopen(filename, "w");
-
 
     /* Allocate Memory*/
     grid.cluster    =(int  *)malloc(grid.n*grid.n*sizeof(int));
@@ -22,18 +28,27 @@ int main()
     grid.finclas    =(int  *)malloc((grid.n*grid.n/4)*sizeof(int));
     grid.children   =(int  *)malloc((grid.n*grid.n/4)*sizeof(int));
 
-    /* Create Grid*/
+    const auto start{std::chrono::steady_clock::now()};
+
+    /* Create Grid */
     createGrid(grid);
 
-    /* Create Clusters*/
+    /* Create Clusters */
     hoshenKopelman(grid);
+    grid.percolate = percolation(grid.cluster, grid.children, grid.n);
 
-    /* Save Data*/
+    std::cout << grid.percolate << "\t" << grid.children[grid.percolate] << std::endl;
+
+    /* Save Data */
     outputCluster(grid, out);
+
+    const auto end{std::chrono::steady_clock::now()};
+    const std::chrono::duration<double> elapsed_seconds{end - start};
+    std::cout << elapsed_seconds.count() << " s " << std::endl;
     
     fclose(out);
     
-    /* Deallocate memory*/
+    /* Deallocate memory */
     free(grid.cluster);
     free(grid.classes);
     free(grid.finclas);
