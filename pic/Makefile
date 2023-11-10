@@ -2,7 +2,7 @@ PC=python3
 SRC=plotGrid.py
 
 plot: $(SRC)
-	$(PC) $(SRC)
+	@$(PC) $(SRC)
 
 clean:
-	rm *.txt *.png
+	@rm -f *.png Cluster
