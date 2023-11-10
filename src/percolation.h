@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <stdlib.h>
+#include <fstream>
 #include <algorithm>
 
 #define RAND() ((double)rand()/(double)(RAND_MAX))
@@ -22,12 +23,6 @@ struct SystemGrid
 
 typedef struct SystemGrid System;
 
-bool gen(double pc)
-{
-    // Get a cell occupied (1) or unoccupied (0) 
-    int p = (RAND()<=pc) ? 1 : 0;
-    return p;
-}
 
 void createGrid(System &grid)
 {
@@ -36,7 +31,7 @@ void createGrid(System &grid)
     n  = grid.n;
     n2 = n*n;
     cm = n2/4;
-    for (pp=0; pp<n2; pp++) grid.cluster[pp] = gen(grid.pc);
+    for (pp=0; pp<n2; pp++) grid.cluster[pp] = (RAND()<=grid.pc);
 
     for (pp=0; pp<cm; pp++) {
         grid.classes[pp]  = 0;
@@ -63,8 +58,7 @@ int link(int *classes, int above, int left)
 {   
     // Connect clusters above and left by changing the root
     // of one of them
-    classes[find(classes, above)] = find(classes, left);
-    return classes[find(classes, above)];
+    return classes[find(classes, above)] = find(classes, left);
 }
 
 void hoshenKopelman(System &grid)
@@ -136,14 +130,13 @@ int percolation(int *cluster, int *children, int n)
     return 0;
 }
 
-/* Save data in a file*/
-void outputCluster(System &grid, FILE *out)
+/* Save data in a binary file*/
+void outputCluster(System &grid)
 {
+    std::ofstream file;
+    file.open("../pic/Cluster", std::ios::out | std::ios::binary);
     int ii, jj;
-    for (jj=0; jj< grid.n; jj++) {
-        for (ii=0; ii< grid.n; ii++) {
-            fprintf(out, " %d", grid.cluster[ii+grid.n*jj]);
-        }
-        fprintf(out, "\n");
-    }
+    int size = grid.n*grid.n*sizeof(int);
+    file.write((char*)grid.cluster, size);
+    file.close();
 }

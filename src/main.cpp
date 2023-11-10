@@ -13,14 +13,11 @@ int main()
     std::srand(1234);
     int     n           = 1000;                 // Side of Grid
     double  pc          = 0.6 ;                 // Critical Probability
-    char    filename[]  = "../pic/Cluster.txt"; // File adress for saving data
+    char    filename[]  = "../pic/Cluster.bin"; // File adress for saving data
     System  grid;
     grid.n  = n;
     grid.pc = pc;
     grid.percolate = 0;
-    FILE *out;
-    
-    out = fopen(filename, "w");
 
     /* Allocate Memory*/
     grid.cluster    =(int  *)malloc(grid.n*grid.n*sizeof(int));
@@ -40,13 +37,12 @@ int main()
     std::cout << grid.percolate << "\t" << grid.children[grid.percolate] << std::endl;
 
     /* Save Data */
-    outputCluster(grid, out);
+    outputCluster(grid);
 
     const auto end{std::chrono::steady_clock::now()};
     const std::chrono::duration<double> elapsed_seconds{end - start};
     std::cout << elapsed_seconds.count() << " s " << std::endl;
     
-    fclose(out);
     
     /* Deallocate memory */
     free(grid.cluster);

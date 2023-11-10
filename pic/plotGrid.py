@@ -6,9 +6,12 @@ import numpy as np
 seed(1234)
 
 ''' ---------- Plot Grid ---------- '''
-Data = np.loadtxt("Cluster.txt");
+data = np.fromfile("Cluster", dtype=np.int32, count=-1)
+n2 = len(data)
+L  = int(np.sqrt(n2))
+Data = np.reshape(data, [L, L], order='A')
 fig, ax = plt.subplots(figsize=(8,8))
-ax.matshow(Data.astype(np.bool), cmap='Greys',  interpolation='nearest', origin='lower')
+ax.matshow(Data.astype(bool), cmap='Greys',  interpolation='nearest', origin='lower')
 ax.set_xlabel("$x$")
 ax.set_ylabel("$y$")
 plt.savefig("Grid.png", transparent=True, dpi=300)
