@@ -14,10 +14,11 @@ ax.set_ylabel("$y$")
 plt.savefig("Grid.png", transparent=True, dpi=300)
 plt.show()
 
+n = int(Data.max())
 
 ''' ----- Define Random Color Map -----'''
-colors = [(0,0,0)] + [(random(),random(),random()) for i in range(255)]
-new_map = LinearSegmentedColormap.from_list('new_map', colors, N=256)
+colors = [(0,0,0)] + [(random(),random(),random()) for i in range(n)]
+new_map = LinearSegmentedColormap.from_list('new_map', colors, N=n+1)
 
 ''' ---------- Plot Grid ---------- '''
 fig, ax = plt.subplots(figsize=(8,8))
