@@ -134,8 +134,7 @@ int percolation(int *cluster, int *children, int n)
 void outputCluster(System &grid)
 {
     std::ofstream file;
-    file.open("../pic/Cluster", std::ios::out | std::ios::binary);
-    int ii, jj;
+    file.open("./pic/Cluster", std::ios::out | std::ios::binary);
     int size = grid.n*grid.n*sizeof(int);
     file.write((char*)grid.cluster, size);
     file.close();

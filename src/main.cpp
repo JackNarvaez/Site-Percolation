@@ -13,7 +13,6 @@ int main()
     std::srand(1234);
     int     n           = 1000;                 // Side of Grid
     double  pc          = 0.6 ;                 // Critical Probability
-    char    filename[]  = "../pic/Cluster.bin"; // File adress for saving data
     System  grid;
     grid.n  = n;
     grid.pc = pc;

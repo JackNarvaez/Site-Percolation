@@ -1,9 +1,15 @@
 CC=g++
-CFLAGS=-O3
-SRC=main.cpp percolation.h
+CFLAGS=-Wall -Werror
+COPTS=-O3
+DEPS=percolation.h
+SRC=main.cpp
+OBJ=${SRC:.cpp=.o}
 
-percolation: $(SRC)
-	@$(CC) $(CFLAGS) $(SRC) -o $@.x; ./$@.x
+%.o: %.cpp $(DEPS)
+	@$(CC) $(CFLAGS) $(COPTS) -o $@ -c $<
+
+percolation: $(OBJ)
+	@$(CC) $(CFLAGS) $(COPTS) -o ../$@ $(OBJ)
 
 clean:
-	@rm -f *.x *.out *.gif
+	@rm -f *.o *.mod *.x *.out *.gif percolation
