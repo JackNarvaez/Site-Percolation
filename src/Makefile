@@ -1,4 +1,4 @@
-CC=g++
+CC=mpic++ -std=c++17
 CFLAGS=-Wall -Werror
 COPTS=-O3
 DEPS=percolation.h
