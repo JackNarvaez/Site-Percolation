@@ -21,7 +21,7 @@ Clone this repository on your machine. Then, navigate to it and run the command 
 ```./percolation seed l pc n```
 
 where `seed` is the seed for the random number generator, `l` is the grid's side, `pc` is the filling probability, and `n` is the number of experiments.
-The code uses the -O3 Flag to improve performance.
+The code uses the -O3 Flag to improve performance. Additionally, it is parallelised using the MPI library (run it with `mpirun`).
 
 To visualize the clusters obtained, one can use the command `make plot`.
 
