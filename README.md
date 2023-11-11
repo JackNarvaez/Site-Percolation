@@ -13,3 +13,7 @@ Site Percolation
   <img src="./pic/Cluster.png" width=350 height=350 aling="center" title="Cluster">
   <figcaption>Fig.2 - Clusters for P=0.6 and L=1000. The system percolates. </figcaption>
 </figure>
+
+# Compilation
+
+Clone this repository on your machine. Then, navigate to it and run the command `make` in your terminal. That's all, now you can run the executable via `./percolation`. The code uses the -O3 Flag to improve performance.
