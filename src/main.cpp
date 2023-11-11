@@ -6,18 +6,26 @@
 #include <iostream>
 #include <stdlib.h>
 #include <chrono>
+#include <mpi.h>
+
 #include "percolation.h"
 
 int main(int argc, char **argv)
 {
-    std::srand(atoi(argv[1]));   // random seed
-    int     l   = atoi(argv[2]); // Side of Grid
-    double  pc  = atof(argv[3]); // Filling Probability
-    int     n   = atoi(argv[4]); // Number of experiments
-    int ii;
-    double dens = 0.; // Percolation probability
-    double sper = 0.; // Size of the spanning cluster
-    double mscl = 0.; // Mean size of clusters (exc. spanning cl.) 
+    int pId;                     // Process rank
+    int nP;                      // Number of processes
+    int root{0};                 // Root process
+    
+    int    l    = atoi(argv[2]); // Side of Grid
+    double pc   = atof(argv[3]); // Filling Probability
+    int    n    = atoi(argv[4]); // Number of experiments
+    double dens = 0.;            // LOCAL percolation's cases
+    double sper = 0.;            // LOCAL normilised size of the spanning cluster
+    double mscl = 0.;            // LOCAL normilized mean size of clusters (exc. spanning cl.)
+    double Dens = 0.;            // GLOBAL Percolation probability
+    double Sper = 0.;            // GLOBAL Density of the spanning cluster
+    double Mscl = 0.;            // GLOBAL Mean size of clusters (exc. spanning cl.) 
+    
     System  grid;
     grid.n  = l;
     grid.pc = pc;
@@ -29,36 +37,56 @@ int main(int argc, char **argv)
     grid.finclas    =(int  *)malloc((grid.n*grid.n/4)*sizeof(int));
     grid.children   =(int  *)malloc((grid.n*grid.n/4)*sizeof(int));
 
-    const auto start{std::chrono::steady_clock::now()};
+    /*Initializes MPI*/
+    MPI_Init(&argc, &argv);
+    MPI_Comm_size(MPI_COMM_WORLD, &nP);
+    MPI_Comm_rank(MPI_COMM_WORLD, &pId);
+
+    std::srand(atoi(argv[1])+pId); // random seed
+
+    int start   = pId*(double(n)/nP);
+    int end     = (pId+1)*(double(n)/nP);
+    int expts   = end-start;       // Number of local experiments
+    double ninv = 1./n;
+    double norm = ninv*1./(grid.n*grid.n);
+    int ii;
+
+    double t_ini = MPI_Wtime();
 
     // Approximate probability as number of favourable outcomes per total events
-    for (ii=0; ii<n; ii++) {
+    for (ii=0; ii<expts; ii++) {
+
         /* Create Grid */
         createGrid(grid);
 
         /* Create Clusters */
         hoshenKopelman(grid);
+
         grid.percolate = percolation(grid.cluster, grid.children, grid.n);
 
         if (grid.percolate) {
-            dens ++;
-            sper += grid.percolate;
+            dens += ninv;
+            sper += norm*grid.children[grid.percolate];
         }
-        mscl += meanclustersize(grid);
+        mscl += ninv*meanclustersize(grid);
     }
 
-    dens /= n;
-    sper /= n;
-    mscl /= n;
+    MPI_Reduce(&dens, &Dens, 1, MPI_DOUBLE, MPI_SUM, root, MPI_COMM_WORLD);
+    MPI_Reduce(&sper, &Sper, 1, MPI_DOUBLE, MPI_SUM, root, MPI_COMM_WORLD);
+    MPI_Reduce(&mscl, &Mscl, 1, MPI_DOUBLE, MPI_SUM, root, MPI_COMM_WORLD);
 
     /* Save Data */
-    outputCluster(grid);
+    if (pId == root) {
+        outputCluster(grid);
+        double t_end = MPI_Wtime();
+        double time_ms = t_end-t_ini;
 
-    const auto end{std::chrono::steady_clock::now()};
-    const std::chrono::duration<double> elapsed_seconds{end - start};
+        std::cout << Dens << "\t" << Sper << "\t" << Mscl << "\t" << grid.n << "\t" << time_ms << std::endl;
+    }
     
-    std::cout << dens << "\t" << sper << "\t" << mscl << "\t" << grid.n << "\t" << elapsed_seconds.count() << std::endl;
-    
+    /*Finalizes MPI*/
+    MPI_Finalize();
+
     /* Deallocate memory */
     free(grid.cluster);
     free(grid.classes);
