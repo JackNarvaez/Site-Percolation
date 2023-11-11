@@ -10,9 +10,9 @@
 
 int main(int argc, char **argv)
 {
-    std::srand(atoi(argv[1]));
+    std::srand(atoi(argv[1]));   // random seed
     int     l   = atoi(argv[2]); // Side of Grid
-    double  pc  = atof(argv[3]); // Critical Probability
+    double  pc  = atof(argv[3]); // Filling Probability
     int     n   = atoi(argv[4]); // Number of experiments
     int ii;
     double dens = 0.; // Percolation probability
