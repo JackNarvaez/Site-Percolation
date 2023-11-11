@@ -109,7 +109,7 @@ void hoshenKopelman(System &grid)
 
 int percolation(int *cluster, int *children, int n)
 {
-    /* returns, if there is a percolant cluster, the percolant cluster label*/
+    /* returns, if there is a spanning cluster, the spanning cluster label*/
     int ii, jj;
     int n2 = n*n;
     int last_row = n2-n;
@@ -128,6 +128,18 @@ int percolation(int *cluster, int *children, int n)
         }
     }
     return 0;
+}
+
+double meanclustersize(System &grid)
+{
+    /* Calculate the mean size of clusters in the grid.
+       Excluding the spanning cluster (if it exists).*/
+    int ii;
+    int mc = grid.finclas[0];
+    double ms = 0.0;
+    for (ii=1; ii<mc; ii++) ms += grid.children[grid.finclas[ii]];
+    if (grid.percolate) ms -= grid.percolate;
+    return ms/(mc-1.);
 }
 
 /* Save data in a binary file*/

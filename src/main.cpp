@@ -8,13 +8,18 @@
 #include <chrono>
 #include "percolation.h"
 
-int main()
+int main(int argc, char **argv)
 {
-    std::srand(1234);
-    int     n           = 1000;                 // Side of Grid
-    double  pc          = 0.6 ;                 // Critical Probability
+    std::srand(atoi(argv[1]));
+    int     l   = atoi(argv[2]); // Side of Grid
+    double  pc  = atof(argv[3]); // Critical Probability
+    int     n   = atoi(argv[4]); // Number of experiments
+    int ii;
+    double dens = 0.; // Percolation probability
+    double sper = 0.; // Size of the spanning cluster
+    double mscl = 0.; // Mean size of clusters (exc. spanning cl.) 
     System  grid;
-    grid.n  = n;
+    grid.n  = l;
     grid.pc = pc;
     grid.percolate = 0;
 
@@ -26,22 +31,33 @@ int main()
 
     const auto start{std::chrono::steady_clock::now()};
 
-    /* Create Grid */
-    createGrid(grid);
+    // Approximate probability as number of favourable outcomes per total events
+    for (ii=0; ii<n; ii++) {
+        /* Create Grid */
+        createGrid(grid);
 
-    /* Create Clusters */
-    hoshenKopelman(grid);
-    grid.percolate = percolation(grid.cluster, grid.children, grid.n);
+        /* Create Clusters */
+        hoshenKopelman(grid);
+        grid.percolate = percolation(grid.cluster, grid.children, grid.n);
 
-    std::cout << grid.percolate << "\t" << grid.children[grid.percolate] << std::endl;
+        if (grid.percolate) {
+            dens ++;
+            sper += grid.percolate;
+        }
+        mscl += meanclustersize(grid);
+    }
+
+    dens /= n;
+    sper /= n;
+    mscl /= n;
 
     /* Save Data */
     outputCluster(grid);
 
     const auto end{std::chrono::steady_clock::now()};
     const std::chrono::duration<double> elapsed_seconds{end - start};
-    std::cout << elapsed_seconds.count() << " s " << std::endl;
     
+    std::cout << dens << "\t" << sper << "\t" << mscl << "\t" << grid.n << "\t" << elapsed_seconds.count() << std::endl;
     
     /* Deallocate memory */
     free(grid.cluster);
