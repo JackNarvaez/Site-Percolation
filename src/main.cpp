@@ -5,7 +5,6 @@
 
 #include <iostream>
 #include <stdlib.h>
-#include <chrono>
 #include <mpi.h>
 
 #include "percolation.h"
