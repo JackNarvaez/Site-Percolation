@@ -48,10 +48,13 @@ int main(int argc, char **argv)
     double ninv = 1./n;
     double norm = ninv*1./(grid.n*grid.n);
     int ii, jj;
+    double t_ini, t_end, time_ms;
 
-    double t_ini = MPI_Wtime();
 
     for (jj=1; jj<it; jj++) {
+        
+        t_ini = MPI_Wtime();
+        
         grid.pc = jj*dp;
         grid.percolate = 0;
 
@@ -80,8 +83,8 @@ int main(int argc, char **argv)
         /* Save Data */
         if (pId == root) {
             outputCluster(grid);
-            double t_end = MPI_Wtime();
-            double time_ms = t_end-t_ini;
+            t_end = MPI_Wtime();
+            time_ms = t_end-t_ini;
 
             std::cout << jj*dp << "\t" <<Dens << "\t" << Sper << "\t" << Mscl << "\t" << grid.n << "\t" << time_ms << std::endl;
         }

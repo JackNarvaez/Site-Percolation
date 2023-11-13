@@ -137,9 +137,13 @@ double meanclustersize(System &grid)
     int ii;
     int mc = grid.finclas[0];
     double ms = 0.0;
-    for (ii=1; ii<mc; ii++) ms += grid.children[grid.finclas[ii]];
-    if (grid.percolate) ms -= grid.percolate;
-    return ms/(mc-1.);
+    if (mc > 1) {
+        for (ii=1; ii<mc; ii++) ms += grid.children[grid.finclas[ii]];
+        if (grid.percolate) ms -= grid.percolate;
+        return ms/(mc-1.);
+    } else {
+        return ms;
+    }
 }
 
 /* Save data in a binary file*/
