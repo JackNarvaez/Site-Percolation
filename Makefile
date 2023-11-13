@@ -3,7 +3,7 @@ PRINTMSG=--no-print-directory
 .PHONY: percolation
 
 percolation:
-	@cd src;${MAKE} $(PRINTMSG) percolation
+	@cd src;${MAKE} $(PRINTMSG) percolation;${MAKE} $(PRINTMSG) percstats
 
 plot:
 	@cd pic; ${MAKE} $(PRINTMSG) plot

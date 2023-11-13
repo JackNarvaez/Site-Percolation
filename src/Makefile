@@ -2,14 +2,19 @@ CC=mpic++ -std=c++17
 CFLAGS=-Wall -Werror
 COPTS=-O3
 DEPS=percolation.h
-SRC=main.cpp
-OBJ=${SRC:.cpp=.o}
+SRC0=single.cpp
+SRC1=multiple.cpp
+OBJ0=${SRC0:.cpp=.o}
+OBJ1=${SRC1:.cpp=.o}
 
 %.o: %.cpp $(DEPS)
 	@$(CC) $(CFLAGS) $(COPTS) -o $@ -c $<
 
-percolation: $(OBJ)
-	@$(CC) $(CFLAGS) $(COPTS) -o ../$@ $(OBJ)
+percolation: $(OBJ0)
+	@$(CC) $(CFLAGS) $(COPTS) -o ../$@ $(OBJ0)
+
+percstats: $(OBJ1)
+	@$(CC) $(CFLAGS) $(COPTS) -o ../$@ $(OBJ1)
 
 clean:
-	@rm -f *.o *.mod *.x *.out *.gif percolation
+	@rm -f *.o *.mod *.x *.out *.gif ../percolation ../percstats
