@@ -33,7 +33,7 @@ int main(int argc, char **argv)
     grid.cluster    =(int  *)malloc(grid.n*grid.n*sizeof(int));
     grid.classes    =(int  *)malloc((grid.n*grid.n/4)*sizeof(int));
     grid.finclas    =(int  *)malloc((grid.n*grid.n/4)*sizeof(int));
-    grid.children   =(int  *)malloc((grid.n*grid.n/4)*sizeof(int));
+    grid.children   =(long int  *)malloc((grid.n*grid.n/4)*sizeof(long int));
 
     /*Initializes MPI*/
     MPI_Init(&argc, &argv);

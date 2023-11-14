@@ -18,11 +18,10 @@ struct SystemGrid
     int     *cluster;   // Cluster's label
     int     *classes;   // 1D Array for cluster's alias (Temporal)
     int     *finclas;   // 1D Array for cluster's alias (Equivalente classes joined)
-    int     *children;  // Children per cluster
+    long int    *children;  // Children per cluster
 };
 
 typedef struct SystemGrid System;
-
 
 void createGrid(System &grid)
 {
@@ -107,7 +106,7 @@ void hoshenKopelman(System &grid)
     }
 }
 
-int percolation(int *cluster, int *children, int n)
+int percolation(int *cluster, long int *children, int n)
 {
     /* returns, if there is a spanning cluster, the spanning cluster label*/
     int ii, jj;
@@ -138,9 +137,10 @@ double meanclustersize(System &grid)
     int mc = grid.finclas[0];
     double ms = 0.0;
     if (mc > 1) {
-        for (ii=1; ii<mc; ii++) ms += grid.children[grid.finclas[ii]];
-        if (grid.percolate) ms -= grid.percolate;
-        return ms/(mc-1.);
+        for (ii=1; ii<mc; ii++) {
+            if (ii != grid.percolate) ms += grid.children[grid.finclas[ii]];
+        }
+        return ms/(mc-1);
     } else {
         return ms;
     }
