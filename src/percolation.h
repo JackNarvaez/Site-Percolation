@@ -134,16 +134,29 @@ double meanclustersize(System &grid)
     /* Calculate the mean size of clusters in the grid.
        Excluding the spanning cluster (if it exists).*/
     int ii;
-    int mc = grid.finclas[0];
+    int s   = grid.children[1];
+    int Ns  = 0;
+    long int A   = 0;
+    long int B   = 0;
+    int mc  = grid.finclas[0];
+    int sp  = grid.children[grid.percolate];
     double ms = 0.0;
     if (mc > 1) {
-        for (ii=1; ii<mc; ii++) {
-            if (ii != grid.percolate) ms += grid.children[grid.finclas[ii]];
+        std::sort(grid.children+1, grid.children+mc+1);
+        for(ii=1; ii<=mc+1; ii++) {
+            if (s==grid.children[ii]) Ns ++;
+            else {
+                A += s*s*Ns;
+                B += s*Ns;
+                Ns = 1;
+                s  = grid.children[ii];
+            }
         }
-        return ms/(mc-1);
-    } else {
-        return ms;
+        A -= sp*sp;
+        B -= sp;
+        ms = (double)A/(double)B;
     }
+    return ms;
 }
 
 /* Save data in a binary file*/
