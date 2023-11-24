@@ -17,10 +17,10 @@ int main(int argc, char **argv)
     
     int    l    = atoi(argv[2]); // Side of Grid
     double dp   = atof(argv[3]); // Filling Probability
-    int    pi   = atof(argv[4]); // Initial probability 
-    int    pf   = atof(argv[5]); // Final probability
+    double pi   = atof(argv[4]); // Initial probability 
+    double pf   = atof(argv[5]); // Final probability
     int    n    = atoi(argv[6]); // Number of experiments
-    int    it   = int(std::floor((pf-pi)/dp)) + 1;  // Iterations
+    int    it   = int((pf-pi)/dp) + 1;  // Iterations
     double dens = 0.;            // LOCAL percolation's cases
     double sper = 0.;            // LOCAL normilised size of the spanning cluster
     double mscl = 0.;            // LOCAL normilized mean size of clusters (exc. spanning cl.)
