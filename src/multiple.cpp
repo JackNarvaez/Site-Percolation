@@ -17,8 +17,10 @@ int main(int argc, char **argv)
     
     int    l    = atoi(argv[2]); // Side of Grid
     double dp   = atof(argv[3]); // Filling Probability
-    int    n    = atoi(argv[4]); // Number of experiments
-    int    it   = 1/dp;          // Iterations
+    int    pi   = atof(argv[4]); // Initial probability 
+    int    pf   = atof(argv[5]); // Final probability
+    int    n    = atoi(argv[6]); // Number of experiments
+    int    it   = int(std::floor((pf-pi)/dp)) + 1;  // Iterations
     double dens = 0.;            // LOCAL percolation's cases
     double sper = 0.;            // LOCAL normilised size of the spanning cluster
     double mscl = 0.;            // LOCAL normilized mean size of clusters (exc. spanning cl.)
@@ -51,11 +53,12 @@ int main(int argc, char **argv)
     double t_ini, t_end, time_ms;
 
 
-    for (jj=1; jj<it; jj++) {
+    grid.pc = pi;                // Start filling probability
+
+    for (jj=0; jj<it; jj++) {
         
         t_ini = MPI_Wtime();
         
-        grid.pc = jj*dp;
         grid.percolate = 0;
 
         // Approximate probability as number of favourable outcomes per total events
@@ -86,8 +89,9 @@ int main(int argc, char **argv)
             t_end = MPI_Wtime();
             time_ms = t_end-t_ini;
 
-            std::cout << jj*dp << "\t" <<Dens << "\t" << Sper << "\t" << Mscl << "\t" << grid.n << "\t" << time_ms << std::endl;
+            std::cout << grid.pc << "\t" << Dens << "\t" << Sper << "\t" << Mscl << "\t" << grid.n << "\t" << time_ms << std::endl;
         }
+        grid.pc += dp;        // Update filling probability
         dens = 0.;            // LOCAL percolation's cases
         sper = 0.;            // LOCAL normilised size of the spanning cluster
         mscl = 0.;            // LOCAL normilized mean size of clusters (exc. spanning cl.)

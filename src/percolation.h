@@ -13,7 +13,7 @@
 struct SystemGrid
 {
     int     n;          // Side of the squared grid
-    double  pc;         // Critical Probability
+    double  pc;         // Filling Probability
     int     percolate;  // If there exists, it contains the percolate cluster label.
     int     *cluster;   // Cluster's label
     int     *classes;   // 1D Array for cluster's alias (Temporal)
