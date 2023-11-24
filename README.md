@@ -27,7 +27,7 @@ To visualize the clusters obtained, one can use the command `make plot`.
 
 - Statistics
 
-If you need to obtain results not just for a single probability value, but as a function of the probability, you can use the following command: `./percstats seed l dp n`. In this case, `dp` refers to the probability step for calculating the function.
+If you need to obtain results not just for a single probability value, but as a function of the probability, you can use the following command: `./percstats seed l dp pi pf n`. In this case, `dp` refers to the probability step for calculating the function from `pi` to `pf`.
 
 ## License
 
