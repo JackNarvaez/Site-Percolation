@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <fstream>
 #include <algorithm>
+#include <math.h> 
 
 #define RAND() ((double)rand()/(double)(RAND_MAX))
 
@@ -18,7 +19,10 @@ struct SystemGrid
     int     *cluster;   // Cluster's label
     int     *classes;   // 1D Array for cluster's alias (Temporal)
     int     *finclas;   // 1D Array for cluster's alias (Equivalente classes joined)
-    long int    *children;  // Children per cluster
+    long int*children;  // Children per cluster
+    double  *xcm;       // Center of mass x
+    double  *ycm;       // center of mass y
+    double  *InerMom;   // Moment of inertia
 };
 
 typedef struct SystemGrid System;
@@ -36,6 +40,9 @@ void createGrid(System &grid)
         grid.classes[pp]  = 0;
         grid.finclas[pp]  = 0;
         grid.children[pp] = 0;
+        grid.xcm[pp]      = 0.;
+        grid.ycm[pp]      = 0.;
+        grid.InerMom[pp]  = 0.;
     }
 }
 
@@ -91,7 +98,7 @@ void hoshenKopelman(System &grid)
         }
     }
 
-    // Assign first equivalente class for each cluster
+    // Assign first equivalent class for each cluster
 
     for (pc=0; pc <n2; pc++){
         if (grid.cluster[pc]) {
@@ -101,7 +108,7 @@ void hoshenKopelman(System &grid)
                 grid.finclas[x] = grid.finclas[0];
             }
             grid.cluster[pc] = grid.finclas[x];
-            grid.children[grid.finclas[x]] ++;
+            grid.children[grid.cluster[pc]] ++;
         }
     }
 }
@@ -157,6 +164,45 @@ double meanclustersize(System &grid)
         ms = (double)A/(double)B;
     }
     return ms;
+}
+
+double correlationlength(System &grid)
+{
+    int ii;
+    int n  = grid.n;
+    int n2 = n*n;
+
+    // Calculate Correlation Length
+    for (ii=0; ii <n2; ii++){
+        if (grid.cluster[ii] && (grid.cluster[ii] != grid.percolate)) {
+            grid.xcm[grid.cluster[ii]] += ii % n;
+            grid.ycm[grid.cluster[ii]] += ii / n;
+        }
+    }
+
+    double x_coor, y_coor, inv_size;
+    for (ii=1; ii<= grid.finclas[0]; ii++) {
+        inv_size      = 1./grid.children[ii];
+        grid.xcm[ii] *= inv_size;
+        grid.ycm[ii] *= inv_size;
+    }
+
+    // Calculate Moment of Inertia
+    for (ii=0; ii < n2; ii++) {
+        if (grid.cluster[ii] && (grid.cluster[ii] != grid.percolate)) {
+            x_coor = ii % n - grid.xcm[grid.cluster[ii]];
+            y_coor = ii / n - grid.ycm[grid.cluster[ii]];
+            grid.InerMom[grid.cluster[ii]] += x_coor*x_coor + y_coor*y_coor;
+        }
+    }
+
+    long int sum1 = 0;
+    long int sum2 = 0;
+    for (ii=1; ii <= grid.finclas[0]; ii++) {
+        sum1 += grid.children[ii]*grid.InerMom[ii];
+        sum2 += grid.children[ii]*grid.children[ii]; 
+    }
+    return sqrt((double) sum1 / (double) sum2);
 }
 
 /* Save data in a binary file*/
