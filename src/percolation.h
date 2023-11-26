@@ -166,13 +166,34 @@ double meanclustersize(System &grid)
     return ms;
 }
 
+double maxclustersize(System &grid)
+{
+    /* Calculate the size of biggest cluster in the grid.
+       Excluding the spanning cluster (if it exists).
+    -> Warning: Make sure you use it after meanclustersize
+       because here we assume that grid.children is already
+       sorted.   
+    */
+
+    int mc  = grid.finclas[0];
+    if (mc > 1) {
+        if (grid.percolate) {
+            return grid.children[mc-1]/(double) grid.n;
+        } else {
+            return grid.children[mc]/(double) grid.n;
+        }
+    } else {
+        return 0.0;
+    }
+}
+
 double correlationlength(System &grid)
 {
     int ii;
     int n  = grid.n;
     int n2 = n*n;
 
-    // Calculate Correlation Length
+    // Calculate Center of Mass
     for (ii=0; ii <n2; ii++){
         if (grid.cluster[ii] && (grid.cluster[ii] != grid.percolate)) {
             grid.xcm[grid.cluster[ii]] += ii % n;
