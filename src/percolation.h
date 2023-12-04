@@ -120,14 +120,14 @@ int percolation(int *cluster, long int *children, int n)
     int n2 = n*n;
     int last_row = n2-n;
     for (ii=0; ii<n; ii++){
-        if (cluster[ii] && (children[ii]>= n)) {
+        if (cluster[ii] && (children[cluster[ii]]>= n)) {
             for (jj=0; jj<n; jj++) {
                 if (cluster[ii]==cluster[last_row + jj]) return cluster[ii];
             }
         }
     }
     for (ii=0; ii<n2; ii+=n) {
-        if (cluster[ii] && (children[ii]>= n)) {
+        if (cluster[ii] && (children[cluster[ii]]>= n)) {
             for (jj=1; jj<=n; jj++) {
                 if (cluster[ii]==cluster[n*jj-1]) return cluster[ii];
             }
