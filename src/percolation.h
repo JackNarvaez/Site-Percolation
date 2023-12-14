@@ -1,5 +1,5 @@
 /******************************************************************************
- ***          Side Percolation using the Hoshen Kopelman algorithm         ***
+ ***          Site Percolation using the Hoshen Kopelman algorithm         ***
  ***          Written by Jacksen Narvaez, 2023.                            ***
 ******************************************************************************/
 
@@ -140,29 +140,29 @@ double meanclustersize(System &grid)
 {
     /* Calculate the mean size of clusters in the grid.
        Excluding the spanning cluster (if it exists).*/
-    int ii;
-    int s   = grid.children[1];
-    int Ns  = 0;
+    long int s;
     long int A   = 0;
     long int B   = 0;
-    int mc  = grid.finclas[0];
-    int sp  = grid.children[grid.percolate];
+    int ii;
+    int Ns = 0;
+    int mc = grid.finclas[0];
+    int sp = grid.children[grid.percolate];
     double ms = 0.0;
-    if (mc > 1) {
-        std::sort(grid.children+1, grid.children+mc+1);
-        for(ii=1; ii<=mc+1; ii++) {
-            if (s==grid.children[ii]) Ns ++;
-            else {
-                A += s*s*Ns;
-                B += s*Ns;
-                Ns = 1;
-                s  = grid.children[ii];
-            }
+
+    std::sort(grid.children+1, grid.children+mc+1);
+    s   = grid.children[1];
+
+    for(ii=1; ii<=mc+1; ii++) {
+        if (s==grid.children[ii]) Ns ++;
+        else {
+            A += s*s*Ns;
+            B += s*Ns;
+            Ns = 1;
+            if (grid.children[ii] == sp) ii+=1;
+            s  = grid.children[ii];
         }
-        A -= sp*sp;
-        B -= sp;
-        ms = (double)A/(double)B;
     }
+    ms = (double) A/(double) B;
     return ms;
 }
 

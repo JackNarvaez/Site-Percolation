@@ -1,5 +1,5 @@
 /******************************************************************************
- ***          Side Percolation using the Hoshen Kopelman algorithm         ***
+ ***          Site Percolation using the Hoshen Kopelman algorithm         ***
  ***          Written by Jacksen Narvaez, 2023.                            ***
 ******************************************************************************/
 
