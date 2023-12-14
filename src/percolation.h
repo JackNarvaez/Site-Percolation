@@ -147,10 +147,11 @@ double meanclustersize(System &grid)
     int Ns = 0;
     int mc = grid.finclas[0];
     int sp = grid.children[grid.percolate];
+    bool pt= grid.percolate; 
     double ms = 0.0;
 
     std::sort(grid.children+1, grid.children+mc+1);
-    s   = grid.children[1];
+    s = grid.children[1];
 
     for(ii=1; ii<=mc+1; ii++) {
         if (s==grid.children[ii]) Ns ++;
@@ -158,7 +159,12 @@ double meanclustersize(System &grid)
             A += s*s*Ns;
             B += s*Ns;
             Ns = 1;
-            if (grid.children[ii] == sp) ii+=1;
+            // Update sorted class of spanning cluster
+            if (pt && grid.children[ii] == sp) {
+                pt = false;     // Assumes only one spanning cluster
+                grid.percolate = ii;
+                ii+=1;
+            }
             s  = grid.children[ii];
         }
     }
@@ -168,7 +174,7 @@ double meanclustersize(System &grid)
 
 double maxclustersize(System &grid)
 {
-    /* Calculate the size of biggest cluster in the grid.
+    /* Calculate the size of largest cluster in the grid.
        Excluding the spanning cluster (if it exists).
     -> Warning: Make sure you use it after meanclustersize
        because here we assume that grid.children is already
@@ -178,7 +184,11 @@ double maxclustersize(System &grid)
     int mc  = grid.finclas[0];
     if (mc > 1) {
         if (grid.percolate) {
-            return grid.children[mc-1]/(double) grid.n;
+            if (mc == grid.percolate) {
+                return grid.children[mc-1]/(double) grid.n;
+            } else {
+                return grid.children[mc]/(double) grid.n;
+            }
         } else {
             return grid.children[mc]/(double) grid.n;
         }
