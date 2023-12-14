@@ -21,10 +21,12 @@ int main(int argc, char **argv)
     double dens = 0.;            // LOCAL percolation's cases
     double sper = 0.;            // LOCAL normilised size of the spanning cluster
     double mscl = 0.;            // LOCAL normilized mean size of clusters (exc. spanning cl.)
+    double maxc = 0.;            // LOCAL size of the biggest cluster (exc. spanning cl.)
     double crln = 0.;            // LOCAL correlation length
     double Dens = 0.;            // GLOBAL Percolation probability
     double Sper = 0.;            // GLOBAL Density of the spanning cluster
-    double Mscl = 0.;            // GLOBAL Mean size of clusters (exc. spanning cl.) 
+    double Mscl = 0.;            // GLOBAL Mean size of clusters (exc. spanning cl.)
+    double Maxc = 0.;            // GLOBAL size of the biggest cluster (exc. spanning cl.)
     double Crln = 0.;            // GLOBAL Correlation Length 
     
     System  grid;
@@ -74,11 +76,13 @@ int main(int argc, char **argv)
         }
         crln += ninv*correlationlength(grid);
         mscl += ninv*meanclustersize(grid);
+        maxc += ninv*maxclustersize(grid);
     }
 
     MPI_Reduce(&dens, &Dens, 1, MPI_DOUBLE, MPI_SUM, root, MPI_COMM_WORLD);
     MPI_Reduce(&sper, &Sper, 1, MPI_DOUBLE, MPI_SUM, root, MPI_COMM_WORLD);
     MPI_Reduce(&mscl, &Mscl, 1, MPI_DOUBLE, MPI_SUM, root, MPI_COMM_WORLD);
+    MPI_Reduce(&maxc, &Maxc, 1, MPI_DOUBLE, MPI_SUM, root, MPI_COMM_WORLD);
     MPI_Reduce(&crln, &Crln, 1, MPI_DOUBLE, MPI_SUM, root, MPI_COMM_WORLD);
 
     /* Save Data */
@@ -87,7 +91,7 @@ int main(int argc, char **argv)
         double t_end = MPI_Wtime();
         double time_ms = t_end-t_ini;
 
-        std::cout << Dens << "\t" << Sper << "\t" << Mscl << "\t" << Crln <<"\t" << grid.n << "\t" << time_ms << std::endl;
+        std::cout << Dens << "\t" << Sper << "\t" << Mscl << "\t" << Maxc << "\t" << Crln <<"\t" << grid.n << "\t" << time_ms << std::endl;
     }
     
     /*Finalizes MPI*/
