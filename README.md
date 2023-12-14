@@ -25,9 +25,7 @@ The code uses the -O3 Flag to improve performance. Additionally, it is paralleli
 
 To visualize the clusters obtained, one can use the command `make plot`.
 
-- Statistics
-
-If you need to obtain results not just for a single probability value, but as a function of `pc`, you can use the command:
+If you need to obtain results not only for a single probability value, but as a function of `pc`, you can use the command:
 
 `./percstats seed l dp pi pf n`
 
